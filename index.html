@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOVEM PAN NACIONAL PLAYER ROLEPLAY</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
+    <style>
+        :root {
+            --bg-main: #0B0F19;
+            --bg-card: #161D30;
+            --bg-input: #1F293D;
+            --accent: #FF3366;
+            --accent-green: #00E676;
+            --text-main: #FFFFFF;
+            --text-sub: #94A3B8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Views */
+        .view {
+            display: none;
+        }
+        .view.active {
+            display: block;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-main);
+            text-transform: uppercase;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 230, 118, 0.1);
+            color: var(--accent-green);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        .status-badge.piscando .dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+
+        /* Ouvintes Counter */
+        .listeners {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            margin-top: 8px;
+        }
+
+        /* Controls / Cards */
+        .card-section {
+            background: var(--bg-input);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-sub);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.08);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .btn-success {
+            background: var(--accent-green);
+            color: #000;
+        }
+
+        /* Sliders */
+        .slider-group {
+            margin-bottom: 12px;
+        }
+        .slider-group:last-child {
+            margin-bottom: 0;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+        }
+        .slider {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 6px;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.1);
+            outline: none;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+        }
+
+        /* Slots Grid */
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .slot-input-wrapper {
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+        }
+
+        .slot-input-wrapper input {
+            width: 100%;
+            margin-top: 4px;
+            font-size: 0.75rem;
+            color: var(--text-sub);
+        }
+
+        .effects-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .fx-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-align: left;
+            position: relative;
+        }
+        .fx-btn input {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Footer / Login switch */
+        .footer-action {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Custom alert message */
+        .alert-banner {
+            background: rgba(255, 51, 102, 0.15);
+            color: var(--accent);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            text-align: center;
+            margin-bottom: 16px;
+            font-weight: 500;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="alertBanner" class="alert-banner"></div>
+
+    <!-- VISTA OUVINTE (PADRÃO) -->
+    <div id="viewOuvinte" class="view active">
+        <div class="header">
+            <div class="logo">Jovem Pan Nacional Player</div>
+            <div class="status-badge piscando">
+                <span class="dot"></span>
+                <span>VOCÊ ESTÁ CONECTADO NA RÁDIO JOVEM PAN NACIONAL PLAYER ROLEPLAY</span>
+            </div>
+            <div class="listeners">👥 <span id="ouvinteCount">42</span> ouvintes sintonizados</div>
+        </div>
+
+        <div class="card-section" style="text-align: center; padding: 40px 20px;">
+            <button id="btnPlayerPlay" class="btn btn-primary" style="border-radius: 50%; width: 80px; height: 80px; margin: 0 auto 24px;">▶</button>
+            <div class="slider-group" style="max-width: 250px; margin: 0 auto;">
+                <div class="slider-label"><span>Volume da Rádio</span></div>
+                <input type="range" id="volumeOuvinte" class="slider" min="0" max="1" step="0.05" value="0.8">
+            </div>
+        </div>
+
+        <button id="btnCopiarLink" class="btn btn-secondary">🔗 Copiar Link para Divulgar</button>
+        <div class="footer-action" onclick="mostrarLogin()">Área do Locutor</div>
+    </div>
+
+    <!-- VISTA LOGIN -->
+    <div id="viewLogin" class="view">
+        <div class="header">
+            <div class="logo">Acesso do Locutor</div>
+        </div>
+        <div class="card-section">
+            <div class="slider-group">
+                <div class="slider-label"><span>Senha de Acesso</span></div>
+                <input type="password" id="senhaLocutor" style="width:100%; padding:12px; border-radius:8px; background:var(--bg-main); border:1px solid rgba(255,255,255,0.1); color:white; outline:none;">
+            </div>
+        </div>
+        <button onclick="autenticarLocutor()" class="btn btn-primary" style="margin-bottom:12px;">Entrar no Painel</button>
+        <button onclick="mostrarOuvinte()" class="btn btn-secondary">Voltar para Rádio</button>
+    </div>
+
+    <!-- VISTA LOCUTOR -->
+    <div id="viewLocutor" class="view">
+        <div class="header">
+            <div class="logo">Painel de Locução</div>
+            <div id="txStatus" class="status-badge" style="background:rgba(255,255,255,0.05); color:var(--text-sub);">OFFLINE</div>
+            <div class="listeners">👥 <span id="locutorCount">42</span> ouvintes ativos</div>
+        </div>
+
+        <!-- Transmissão Principal -->
+        <div class="card-section">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
+                <button id="btnIniciarTx" class="btn btn-success" onclick="iniciarTransmissao()">Iniciar TX</button>
+                <button id="btnFinalizarTx" class="btn btn-secondary" onclick="finalizarTransmissao()" disabled>Finalizar</button>
+            </div>
+            <button id="btnMicToggle" class="btn btn-secondary" onclick="toggleMicrofone()" disabled>🎙️ MICROFONE DESLIGADO</button>
+        </div>
+
+        <!-- Controles de Áudio -->
+        <div class="card-section">
+            <div class="section-title">Mesa de Som (Volumes)</div>
+            <div class="slider-group">
+                <div class="slider-label"><span>Microfone / Voz</span></div>
+                <input type="range" id="volVoz" class="slider" min="0" max="1.5" step="0.05" value="1" oninput="ajustarVolumes()">
+            </div>
+            <div class="slider-group">
+                <div class="slider-label"><span>Músicas de Fundo</span></div>
+                <input type="range" id="volMusica" class="slider" min="0" max="1" step="0.05" value="0.7" oninput="ajustarVolumes()">
+            </div>
+            <div style="margin-top:12px;">
+                <button id="btnPauseMusic" class="btn btn-secondary" onclick="togglePauseMusica()" style="padding:8px; font-size:0.85rem;">⏸️ Pausar Música Atual</button>
+            </div>
+        </div>
+
+        <!-- Playlist 3 Slots -->
+        <div class="card-section">
+            <div class="section-title">Playlist Contínua (3 Slots)</div>
+            <div class="slots-grid">
+                <div class="slot-input-wrapper">
+                    <span>Slot 1</span>
+                    <input type="file" id="track1" accept="audio/*" onchange="loadTrack(0, this)">
+                </div>
+                <div class="slot-input-wrapper">
+                    <span>Slot 2</span>
+                    <input type="file" id="track2" accept="audio/*" onchange="loadTrack(1, this)">
+                </div>
+                <div class="slot-input-wrapper" style="grid-column: span 2;">
+                    <span>Slot 3</span>
+                    <input type="file" id="track3" accept="audio/*" onchange="loadTrack(2, this)">
+                </div>
+            </div>
+            <div id="currentPlayingTxt" style="font-size:0.75rem; color:var(--accent-green); margin-top:8px; text-align:center;">Nenhuma música tocando</div>
+        </div>
+
+        <!-- Vinhetas 10 Slots -->
+        <div class="card-section">
+            <div class="section-title">Disparador de Vinhetas / Efeitos (10 Slots)</div>
+            <div class="effects-grid" id="effectsContainer">
+                <!-- Generados por JS para 10 slots -->
+            </div>
+        </div>
+
+        <button onclick="mostrarOuvinte()" class="btn btn-secondary">Sair do Painel</button>
+    </div>
+</div>
+
+<script>
+    // Configurações Gerais e Estado
+    let peer = null;
+    let localStream = null;
+    let audioCtx = null;
+    let destNode = null;
+    let micNode = null;
+    let micStream = null;
+    let currentConnection = null;
+    
+    // Controles de Ganho/Volume (Web Audio)
+    let gainVoz = null;
+    let gainMusica = null;
+    let gainEfeitos = null;
+
+    // Elementos de Áudio Locutor
+    let bgMusicAudio = new Audio();
+    let fxAudio = new Audio();
+    
+    // Estado da Playlist
+    let playlist = [null, null, null];
+    let currentTrackIndex = 0;
+    let isMicOpen = false;
+    let baseMusicVolume = 0.7;
+
+    // Inicialização da View e Parâmetros da URL
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('view') === 'locutor') {
+            mostrarLogin();
+        }
+        gerarSlotsEfeitos();
+        simularOuvintes();
+
+        // Configuração de eventos para o Player do Ouvinte
+        document.getElementById('btnPlayerPlay').addEventListener('click', ligarPlayerOuvinte);
+        document.getElementById('volumeOuvinte').addEventListener('input', (e) => {
+            if(window.remoteAudio) window.remoteAudio.volume = e.target.value;
+        });
+
+        document.getElementById('btnCopiarLink').addEventListener('click', () => {
+            const urlSemParams = window.location.href.split('?')[0];
+            navigator.clipboard.writeText(urlSemParams);
+            mostrarAlerta("Link de ouvinte copiado com sucesso para divulgação!");
+        });
+
+        // Configuração do fim da faixa de música automática
+        bgMusicAudio.addEventListener('ended', () => {
+            avancarPlaylist();
+        });
+    });
+
+    function mostrarAlerta(msg) {
+        const banner = document.getElementById('alertBanner');
+        banner.innerText = msg;
+        banner.style.display = 'block';
+        setTimeout(() => banner.style.display = 'none', 4000);
+    }
+
+    function simularOuvintes() {
+        const num = Math.floor(Math.random() * (65 - 35 + 1)) + 35;
+        document.getElementById('ouvinteCount').innerText = num;
+        document.getElementById('locutorCount').innerText = num;
+        setTimeout(simularOuvintes, 8000);
+    }
+
+    function mostrarLogin() {
+        ocultarTodasViews();
+        document.getElementById('viewLogin').classList.add('active');
+    }
+
+    function mostrarOuvinte() {
+        ocultarTodasViews();
+        document.getElementById('viewOuvinte').classList.add('active');
+    }
+
+    function ocultarTodasViews() {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    }
+
+    function autenticarLocutor() {
+        const senha = document.getElementById('senhaLocutor').value;
+        if (senha === 'jovempan123') {
+            ocultarTodasViews();
+            document.getElementById('viewLocutor').classList.add('active');
+        } else {
+            alert('Senha incorreta! Use jovempan123');
+        }
+    }
+
+    // Geração dos 10 Slots de Efeitos
+    function gerarSlotsEfeitos() {
+        const container = document.getElementById('effectsContainer');
+        container.innerHTML = '';
+        for (let i = 1; i <= 10; i++) {
+            const div = document.createElement('div');
+            div.className = 'fx-btn';
+            div.innerHTML = `
+                <span>disparar slot ${i}</span>
+                <input type="file" accept="audio/*" onchange="carregarEfeito(${i}, this)">
+            `;
+            div.addEventListener('click', (e) => {
+                if(e.target.tagName !== 'INPUT') {
+                    dispararEfeito(i);
+                }
+            });
+            container.appendChild(div);
+        }
+    }
+
+    let bancoEfeitos = {};
+    function carregarEfeito(id, input) {
+        if(input.files && input.files[0]) {
+            bancoEfeitos[id] = URL.createObjectURL(input.files[0]);
+            input.parentElement.style.borderColor = 'var(--accent)';
+            input.parentElement.querySelector('span').innerText = `Slot ${id} Pronto`;
+        }
+    }
+
+    function dispararEfeito(id) {
+        if(bancoEfeitos[id]) {
+            if (audioCtx) {
+                let s = audioCtx.createMediaElementSource(fxAudio);
+                s.connect(gainEfeitos);
+            }
+            fxAudio.src = bancoEfeitos[id];
+            fxAudio.volume = 1;
+            fxAudio.play().catch(e => console.log(e));
+        } else {
+            mostrarAlerta(`Slot ${id} está vazio. Escolha um arquivo de áudio primeiro.`);
+        }
+    }
+
+    // Playlist e Arquivos de Música
+    function loadTrack(index, input) {
+        if (input.files && input.files[0]) {
+            playlist[index] = URL.createObjectURL(input.files[0]);
+            mostrarAlerta(`Música carregada no Slot ${index + 1}`);
+        }
+    }
+
+    function tocarMusicaAtual() {
+        if (playlist[currentTrackIndex]) {
+            bgMusicAudio.src = playlist[currentTrackIndex];
+            document.getElementById('currentPlayingTxt').innerText = `Tocando Slot ${currentTrackIndex + 1}`;
+            bgMusicAudio.play().catch(e => console.log(e));
+        } else {
+            document.getElementById('currentPlayingTxt').innerText = `Nenhuma música no Slot ${currentTrackIndex + 1}`;
+        }
+    }
+
+    function avancarPlaylist() {
+        currentTrackIndex = (currentTrackIndex + 1) % 3;
+        tocarMusicaAtual();
+    }
+
+    function togglePauseMusica() {
+        const btn = document.getElementById('btnPauseMusic');
+        if (bgMusicAudio.paused) {
+            bgMusicAudio.play();
+            btn.innerText = "⏸️ Pausar Música Atual";
+        } else {
+            bgMusicAudio.pause();
+            btn.innerText = "▶️ Retomar Música";
+        }
+    }
+
+    // Gerenciamento de Transmissão (Locutor Web Audio Mixer)
+    function iniciarTransmissao() {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        destNode = audioCtx.createMediaStreamDestination();
+
+        // Configuração de ganhos
+        gainVoz = audioCtx.createGain();
+        gainMusica = audioCtx.createGain();
+        gainEfeitos = audioCtx.createGain();
+
+        gainVoz.connect(destNode);
+        gainMusica.connect(destNode);
+        gainEfeitos.connect(destNode);
+
+        // Vincula elementos de áudio já existentes ao contexto
+        const sourceMusica = audioCtx.createMediaElementSource(bgMusicAudio);
+        sourceMusica.connect(gainMusica);
+
+        const sourceFx = audioCtx.createMediaElementSource(fxAudio);
+        sourceFx.connect(gainEfeitos);
+
+        ajustarVolumes();
+
+        // Inicia PeerJS como Servidor Fixo de Transmissão
+        peer = new Peer('jovempan_nacional_live_stream_room');
+
+        peer.on('open', (id) => {
+            document.getElementById('txStatus').innerText = "AO VIVO (TRANSMITINDO)";
+            document.getElementById('txStatus').style.color = "var(--accent-green)";
+            document.getElementById('txStatus').style.background = "rgba(0, 230, 118, 0.15)";
+            
+            document.getElementById('btnIniciarTx').disabled = true;
+            document.getElementById('btnFinalizarTx').disabled = false;
+            document.getElementById('btnMicToggle').disabled = false;
+
+            // Inicia reprodução da playlist
+            tocarMusicaAtual();
+        });
+
+        peer.on('call', (call) => {
+            // Quando um ouvinte "liga", o locutor envia o áudio mixado de volta
+            call.answer(destNode.stream);
+        });
+
+        peer.on('error', (err) => {
+            if(err.type === 'unavailable-id') {
+                mostrarAlerta("Erro: Já existe um locutor transmitindo no momento!");
+                finalizarTransmissao();
+            }
+        });
+    }
+
+    function finalizarTransmissao() {
+        bgMusicAudio.pause();
+        fxAudio.pause();
+        if(micStream) {
+            micStream.getTracks().forEach(t => t.stop());
+        }
+        if(peer) peer.destroy();
+
+        document.getElementById('txStatus').innerText = "OFFLINE";
+        document.getElementById('txStatus').style.color = "var(--text-sub)";
+        document.getElementById('txStatus').style.background = "rgba(255,255,255,0.05)";
+
+        document.getElementById('btnIniciarTx').disabled = false;
+        document.getElementById('btnFinalizarTx').disabled = true;
+        document.getElementById('btnMicToggle').disabled = true;
+        document.getElementById('btnMicToggle').innerText = "🎙️ MICROFONE DESLIGADO";
+        isMicOpen = false;
+    }
+
+    async function toggleMicrofone() {
+        const btn = document.getElementById('btnMicToggle');
+        if (!isMicOpen) {
+            try {
+                micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                micNode = audioCtx.createMediaStreamSource(micStream);
+                micNode.connect(gainVoz);
+                
+                isMicOpen = true;
+                btn.innerText = "🔴 MICROFONE ABERTO (AO VIVO)";
+                btn.style.background = "var(--accent)";
+                
+                // Efeito Ducking Automático (Diminui música para a voz entrar)
+                baseMusicVolume = parseFloat(document.getElementById('volMusica').value);
+                gainMusica.gain.setValueAtTime(baseMusicVolume * 0.2, audioCtx.currentTime);
+            } catch (err) {
+                alert("Não foi possível acessar o microfone: " + err);
+            }
+        } else {
+            if(micStream) {
+                micStream.getTracks().forEach(t => t.stop());
+            }
+            isMicOpen = false;
+            btn.innerText = "🎙️ MICROFONE DESLIGADO";
+            btn.style.background = "rgba(255,255,255,0.08)";
+            
+            // Restaura o volume normal da música
+            baseMusicVolume = parseFloat(document.getElementById('volMusica').value);
+            gainMusica.gain.setValueAtTime(baseMusicVolume, audioCtx.currentTime);
+        }
+    }
+
+    function ajustarVolumes() {
+        if(!audioCtx) return;
+        const volV = document.getElementById('volVoz').value;
+        const volM = document.getElementById('volMusica').value;
+        
+        gainVoz.gain.setValueAtTime(volV, audioCtx.currentTime);
+        
+        if (isMicOpen) {
+            gainMusica.gain.setValueAtTime(volM * 0.2, audioCtx.currentTime);
+        } else {
+            gainMusica.gain.setValueAtTime(volM, audioCtx.currentTime);
+        }
+        gainEfeitos.gain.setValueAtTime(1, audioCtx.currentTime);
+    }
+
+    // Receptor Ouvinte (Player)
+    function ligarPlayerOuvinte() {
+        const btn = document.getElementById('btnPlayerPlay');
+        if(window.remoteAudio && !window.remoteAudio.paused) {
+            window.remoteAudio.pause();
+            btn.innerText = "▶";
+            return;
+        }
+
+        mostrarAlerta("Conectando ao sinal da rádio Jovem Pan...");
+        
+        const ouvintePeer = new Peer();
+        ouvintePeer.on('open', () => {
+            // Cria uma chamada vazia para o endereço do locutor
+            // Como precisamos receber áudio, enviamos um stream vazio local falso
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(fakeStream => {
+                // Paramos as faixas de áudio imediatamente para não vazar microfone do ouvinte
+                fakeStream.getTracks().forEach(track => track.stop());
+                
+                const call = ouvintePeer.call('jovempan_nacional_live_stream_room', fakeStream);
+                call.on('stream', (remoteStream) => {
+                    if(!window.remoteAudio) {
+                        window.remoteAudio = new Audio();
+                    }
+                    window.remoteAudio.srcObject = remoteStream;
+                    window.remoteAudio.volume = document.getElementById('volumeOuvinte').value;
+                    window.remoteAudio.play();
+                    
+                    btn.innerText = "⏸";
+                    mostrarAlerta("Você está conectado ao vivo!");
+
+                    // Integração com a API de Segundo Plano (Background Playback)
+                    if ('mediaSession' in navigator) {
+                        navigator.mediaSession.metadata = new MediaMetadata({
+                            title: 'JOVEM PAN NACIONAL PLAYER',
+                            artist: 'ROLEPLAY LIVE',
+                            album: 'Ao Vivo'
+                        });
+                    }
+                });
+            }).catch(err => {
+                // Caso não tenha microfone no dispositivo ou recuse, tenta conectar diretamente
+                const call = ouvintePeer.call('jovempan_nacional_live_stream_room', new MediaStream());
+                call.on('stream', (remoteStream) => {
+                    if(!window.remoteAudio) window.remoteAudio = new Audio();
+                    window.remoteAudio.srcObject = remoteStream;
+                    window.remoteAudio.volume = document.getElementById('volumeOuvinte').value;
+                    window.remoteAudio.play();
+                    btn.innerText = "⏸";
+                });
+            });
+        });
+    }
+</script>
+
+</body>
+</html>
